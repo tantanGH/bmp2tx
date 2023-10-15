@@ -54,7 +54,7 @@ def convert(screen_width, src_image_dir):
       with open(grm_file_name, "wb") as f:
         f.write(grm_bytes)
 
-      print(".", end="", flush=True)
+#      print(".", end="", flush=True)
 
       n += 1
 
