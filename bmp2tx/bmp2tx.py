@@ -4,7 +4,7 @@ import argparse
 
 from PIL import Image
 
-def convert(screen_width, src_image_dir):
+def convert(screen_width, screen_height, src_image_dir):
 
   # frame index offset (fix)
   frame_index_offset = 10000
@@ -26,8 +26,14 @@ def convert(screen_width, src_image_dir):
       if im_width != screen_width:
         print("error: image width is not same as screen width.")
         break
+      if im_height > screen_height:
+        print("error: image height is larger than screen height.")
+        break
 
       im_bytes = im.tobytes()
+
+      offset_y = (screen_height - im_height) // 2
+      offset_bytes = bytes([0] * screen_width * offset_y * 2)
 
       grm_bytes = bytearray(screen_width * im_height * 2)
       for y in range(im_height):
@@ -52,7 +58,9 @@ def convert(screen_width, src_image_dir):
       os.makedirs(f"im{frame_group:02d}", exist_ok=True)
 
       with open(grm_file_name, "wb") as f:
+        f.write(offset_bytes)
         f.write(grm_bytes)
+        f.write(offset_bytes)
 
 #      print(".", end="", flush=True)
 
@@ -70,7 +78,7 @@ def main():
 
   args = parser.parse_args()
 
-  convert(256, args.src_image_dir)
+  convert(256, 256, args.src_image_dir)
 
 
 if __name__ == "__main__":
